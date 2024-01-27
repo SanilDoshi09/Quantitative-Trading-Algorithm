@@ -1,4 +1,4 @@
-=# Quantitative Trading Algorithm Project
+# Quantitative Trading Algorithm Project
 
 ## Overview
 This project focuses on statistical arbitrage and pairs trading. It involves selecting stock pairs, performing preliminary analysis to identify valid pairs, and conducting various financial analyses.
