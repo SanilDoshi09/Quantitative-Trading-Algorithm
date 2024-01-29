@@ -36,9 +36,9 @@ def set_logger(name):
     logger.setLevel(logging.DEBUG)
 
     # file handler
-    file_handler = logging.FileHandler("../logs/{}_{}.log".format(name, date))
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(CustomFormatter())
+    # file_handler = logging.FileHandler("../logs/{}_{}.log".format(name, date))
+    # file_handler.setLevel(logging.DEBUG)
+    # file_handler.setFormatter(CustomFormatter())
 
     # console handler
     console_handler = logging.StreamHandler()
@@ -46,7 +46,7 @@ def set_logger(name):
     console_handler.setFormatter(CustomFormatter())
 
     # add the handlers to the logger
-    logger.addHandler(file_handler)
+    # logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
     return logger
