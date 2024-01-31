@@ -51,11 +51,16 @@ class PairAnalysis:
         """
         correlation_matrix = self.correlation_matrix()
         self.logger.info(f"Identifying potential pairs with threshold {threshold}")
-        pairs = []
+        pairs = [] # list of identified pairs
+        coefficients = [] # store coefficients for each pair
         for i in range(len(correlation_matrix.columns)):
             for j in range(i):
-                if abs(correlation_matrix.iloc[i, j]) > threshold:
-                    pairs.append((correlation_matrix.columns[i], correlation_matrix.columns[j]))
+                corr_value = abs(correlation_matrix.iloc[i, j]) # correlation coefficient
+                if corr_value > threshold:
+                    pair = (correlation_matrix.columns[i], correlation_matrix.columns[j])
+
+                    pairs.append(pair) # add pair to list
+                    coefficients.append(f"{pair[0]}, {pair[1]}: {corr_value:.2f}")
                     self.logger.debug(f"Pair found: {correlation_matrix.columns[i]} and {correlation_matrix.columns[j]}")
         
         if not pairs:
@@ -63,6 +68,9 @@ class PairAnalysis:
             print("No potential pairs found, try changing the threshold or testing different stocks.")
             sys.exit(1)
         else:
+            print(f"\nIdentified Pairs with Correlation Coefficients greater than {threshold}:")
+            for info in coefficients:
+                print(info)
             return pairs
     
     @staticmethod
@@ -78,7 +86,6 @@ class PairAnalysis:
             logging.error(f"Error performing ADF test for {pair[0]} and {pair[1]}: {e}")
             return None
 
-
     def cointegration_test(self):
         """
         Performs the cointegration test on the potential pairs.
@@ -90,18 +97,27 @@ class PairAnalysis:
         self.logger.info(f"Performing cointegration test on {len(pairs)} pairs")
 
         cointegrated_pairs = []
+        pairs_info= {} # dictionary storing p-values for each pair
+
         for pair in pairs:
             spread = self.calculate_spread(pair)
             p_value = PairAnalysis.check_cointegration(spread, pair)
+            pairs_info[pair] = p_value
             if p_value < 0.05:
                 cointegrated_pairs.append(pair)
-                print(f"The pair {pair[0]} and {pair[1]} is cointegrated with p-value {p_value}")
+                self.logger.debug(f"Pair {pair[0]} and {pair[1]} cointegrated. P-value: {p_value:.2f}")
             else:
-                print(f"The pair {pair[0]} and {pair[1]} is not cointegrated with p-value {p_value}")
+                self.logger.debug(f"Pair {pair[0]} and {pair[1]} not cointegrated. P-value: {p_value:.2f}")
         
         if not cointegrated_pairs:
             self.logger.error("No cointegrated pairs found")
+            print("No cointegrated pairs found (Need p-value < 0.05). Full list of pairs and p-values:")
+            for pair, p_value in pairs_info.items():
+                print(f"{pair[0]}, {pair[1]}: {p_value:.4f}")
             sys.exit(1)
-        else:
+        else: 
+            print("\nCointegrated Pairs with P-value < 0.05:")
+            for pair in cointegrated_pairs:
+                print(f"{pair[0]}, {pair[1]}: {pairs_info[pair]:.4f}")
             return cointegrated_pairs
      
