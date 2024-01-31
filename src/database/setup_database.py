@@ -4,10 +4,10 @@ import logging
 from .db_manager import Database
 from ..logger import set_logger
 
-logger = set_logger("setup_database")
-
 def setup_database():
     """Sets up the database by creating necessary tables."""
+
+    logger = set_logger(__name__)
     
     db = Database()
     queries = db.read_sql('data/schema.sql')
