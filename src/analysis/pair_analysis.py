@@ -52,25 +52,29 @@ class PairAnalysis:
         correlation_matrix = self.correlation_matrix()
         self.logger.info(f"Identifying potential pairs with threshold {threshold}")
         pairs = [] # list of identified pairs
-        coefficients = [] # store coefficients for each pair
+        coefficients = {} # store coefficients for each pair
+
         for i in range(len(correlation_matrix.columns)):
             for j in range(i):
                 corr_value = abs(correlation_matrix.iloc[i, j]) # correlation coefficient
-                if corr_value > threshold:
-                    pair = (correlation_matrix.columns[i], correlation_matrix.columns[j])
+                pair = (correlation_matrix.columns[i], correlation_matrix.columns[j]) # identify pair
 
+                coefficients[pair] = corr_value # store coefficient for pair
+                
+                if corr_value > threshold:
                     pairs.append(pair) # add pair to list
-                    coefficients.append(f"{pair[0]}, {pair[1]}: {corr_value:.2f}")
                     self.logger.debug(f"Pair found: {correlation_matrix.columns[i]} and {correlation_matrix.columns[j]}")
         
         if not pairs:
             self.logger.error("No potential pairs found")
             print("No potential pairs found, try changing the threshold or testing different stocks.")
+            for pair, coefficient in coefficients.items():
+                print(f"{pair[0]}, {pair[1]}: {coefficient:.4f}")
             sys.exit(1)
         else:
-            print(f"\nIdentified Pairs with Correlation Coefficients greater than {threshold}:")
-            for info in coefficients:
-                print(info)
+            print(f"\nIdentified Pairs with Correlation Coefficients > {threshold}:")
+            for pair in pairs:
+                print(f"{pair[0]}, {pair[1]}: {coefficients[pair]:.4f}") # print valid pairs and their coefficients
             return pairs
     
     @staticmethod
