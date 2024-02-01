@@ -1,4 +1,5 @@
 import os
+import sys
 import logging 
 import warnings
 import time
@@ -41,7 +42,7 @@ class DataFetcher:
         :return: A pandas DataFrame containing the historical data.
         """
 
-        self.logger.info("Fetching data from Yahoo Finance")
+        self.logger.debug("Fetching data from Yahoo Finance")
         
         data = pd.DataFrame()
         for ticker in self.tickers:
@@ -50,9 +51,11 @@ class DataFetcher:
                 ticker_data = yf.download(ticker, self.start_date, self.end_date)
                 if not ticker_data.empty: # makes sure the data is not empty
                     data[ticker] = ticker_data['Adj Close'] # adds the data to the DataFrame
-                    self.logger.debug(f"Fetched data for {ticker}")
+                    self.logger.info(f"Fetched data for {ticker}")
                 else:
                     self.logger.warning(f"No data found for {ticker}")
+                    print(f"\nNo data found for {ticker}. It may be delisted or unavailable.\n")    
+                    sys.exit(1) # exit program if no data is found (invalid ticker)
             except Exception as e:
                 self.logger.error(f"Error fetching data for {ticker}: {e}")
             time.sleep(1) # pause for 1 second to avoid rate limiting
