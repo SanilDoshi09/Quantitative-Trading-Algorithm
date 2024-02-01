@@ -9,11 +9,12 @@ def main():
     logger = set_logger("main")
 
     logger.info("Beginning program")
-    ticks = ["MSFT", "SPY"] # test data
+    not_working = ["SPY", "GOOG"]
+    ticks = ["GME", "SPY", "WMT", "BA"] # test data
     tickers = ["DPZ", "AAPL", "GOOG", "AMD", "GME", "SPY", "NFLX", "BA", "WMT","DASH","GS","XOM","NKE","AMZN", "META","BRK-B", "MSFT"] # test data
-    pair_analysis = PairAnalysis(ticks)
+    pair_analysis = PairAnalysis(tickers)
 
-    pair_analysis.cointegration_test()
+    pair_analysis.run_analysis()
 
 if __name__ == "__main__":
     main()

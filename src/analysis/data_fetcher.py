@@ -5,13 +5,23 @@ import time
 
 import yfinance as yf
 import pandas as pd
+import os
 
 from ..logger import set_logger
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# dates for fetching data
+STARTDATE = os.getenv("STARTDATE")
+ENDDATE = os.getenv("ENDDATE")
 
 class DataFetcher:
 
-    def __init__(self, tickers):
+    def __init__(self, tickers, start_date=STARTDATE, end_date=ENDDATE):
         self.logger = set_logger(__name__)
+        self.start_date = start_date
+        self.end_date = end_date
         self.logger.info("Data fetcher object initialized") 
 
         # Suppress warnings
@@ -21,14 +31,8 @@ class DataFetcher:
         yf_logger.setLevel(logging.ERROR)
 
         self.tickers = tickers
-        self.print_tickers()
-
-    def print_tickers(self):
-        # prints the list of tickers
-        print("The stocks we are analyzing are:")
-        print(", ".join(self.tickers))
     
-    def fetch_data(self, start_date, end_date):
+    def fetch_data(self):
         """
         Fetches historical data for the specified tickers between start_date and end_date.
 
@@ -43,7 +47,7 @@ class DataFetcher:
         for ticker in self.tickers:
             try:
                 # fetch data from yfinance
-                ticker_data = yf.download(ticker, start=start_date, end=end_date)
+                ticker_data = yf.download(ticker, self.start_date, self.end_date)
                 if not ticker_data.empty: # makes sure the data is not empty
                     data[ticker] = ticker_data['Adj Close'] # adds the data to the DataFrame
                     self.logger.debug(f"Fetched data for {ticker}")
