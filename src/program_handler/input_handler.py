@@ -15,6 +15,7 @@ class InputHandler:
     def __init__(self, tickers=TICKERS):
         self.logger = set_logger(__name__)
         self.tickers = tickers
+        self.preliminiary_analysis()
     
     def validate_stocks(self):
         # check if there are enough stocks to analyze
@@ -41,9 +42,16 @@ class InputHandler:
             return True
     
     def preliminiary_analysis(self):
+        self.logger.info("Performing preliminary analysis")
         # perform preliminary analysis
         self.validate_stocks()
         self.confirm_selection()
+    
+    def perform_metrics(self):
+        # perform metrics
+        pass
+    
+    
 
     
 

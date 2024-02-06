@@ -8,6 +8,7 @@ from statsmodels.tsa.stattools import adfuller
 from .data_fetcher import DataFetcher
 from src.program_handler.error_handler import ErrorHandler
 from src.program_handler.input_handler import InputHandler
+from src.utils.utility import print_pairs, choose_pair
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -107,7 +108,7 @@ class PairAnalysis:
             # update dictionary with p-value
             self.pair_info[pair] = (coefficient, p_value)
             
-            if p_value < self.pvalue:
+            if p_value <= self.pvalue:
                 valid_pairs += 1
                 self.logger.info(f"{pair[0]}, {pair[1]}: Cointegrated (p-value: {p_value:.2f})")
             else:
@@ -117,9 +118,12 @@ class PairAnalysis:
         if valid_pairs == 0:
             return self.error_handler.handle_error('coint', self.pair_info)
         
+        print('\nSuccessfully passed the Augmented Dickey Fuller Cointegration test!')
+        mapped_pairs = print_pairs(self.pair_info, self.pvalue) # map pairs to display index and print pairs
+        return choose_pair(mapped_pairs) # return the selected pair
+
     def run_analysis(self):
 
-        self.input_handler.preliminiary_analysis()
         self.cointegration_test()
         return self.pair_info # return the final pair_info dictionary
      
