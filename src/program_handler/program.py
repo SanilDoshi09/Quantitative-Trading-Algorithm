@@ -26,9 +26,7 @@ class Program:
         self.spread = pd.Series()
     
     def fetch_data(self):
-        input_handler = InputHandler()
-        tickers = input_handler.tickers
-        data_fetcher = DataFetcher(tickers)
+        data_fetcher = DataFetcher(self.tickers)
         self.data = data_fetcher.fetch_data()
         self.logger.info("Data loaded successfully")
     
@@ -44,8 +42,7 @@ class Program:
     def calculate_metrics(self):
         metrics = Metrics(self.spread)
         self.logger.debug("Calculating metrics")
-        pass
-
+\
     def run(self):
         self.logger.debug("Running program...")
         self.perform_preliminary_analysis()
