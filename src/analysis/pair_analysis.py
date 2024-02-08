@@ -5,35 +5,27 @@ import pandas as pd
 
 from ..logger import set_logger
 from statsmodels.tsa.stattools import adfuller
-from .data_fetcher import DataFetcher
 from src.program_handler.error_handler import ErrorHandler
-from src.program_handler.input_handler import InputHandler
 from src.utils.utility import print_pairs, choose_pair
 from dotenv import load_dotenv
 
 load_dotenv()
-
-TICKERS = os.getenv("STOCKS", '').split(",")
 
 THRESHOLD = float(os.getenv("THRESHOLD"))
 PVALUE = float(os.getenv("PVALUE"))
 
 class PairAnalysis:
 
-    def __init__(self, tickers=TICKERS, threshold=THRESHOLD, pvalue=PVALUE):
+    def __init__(self, data, tickers, threshold=THRESHOLD, pvalue=PVALUE):
         self.logger = set_logger(__name__) # set logger
-
+        self.data = data # set data
+        self.tickers = tickers # set tickers
         self.threshold = threshold # set threshold
         self.pvalue = pvalue # set ideal p-value
 
         self.error_handler = ErrorHandler() # initialize error handler
-        self.input_handler = InputHandler()
-
-        data_fetcher = DataFetcher(tickers)
-        self.data = data_fetcher.fetch_data() # store fetched data
 
         self.pair_info = {} # dictionary to store pairs and their coefficients / p-values
-        self.logger.info("Data loaded successfully")
 
     def calculate_spread(self, pair):
         # :param pair: A tuple containing the two stock symbols.
@@ -123,7 +115,7 @@ class PairAnalysis:
         return choose_pair(mapped_pairs) # return the selected pair
 
     def run_analysis(self):
-
-        self.cointegration_test()
-        return self.pair_info # return the final pair_info dictionary
+        self.logger.debug("Running pair analysis...")
+        chosen_pair = self.cointegration_test()
+        return chosen_pair # return the final pair_info dictionary
      
