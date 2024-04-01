@@ -40,12 +40,16 @@ class Program:
         self.spread = pair_analysis.calculate_spread(self.pair_info)
 
     def calculate_metrics(self):
-        metrics = Metrics(self.spread)
-        self.logger.debug("Calculating metrics")
-\
+        metrics = Metrics(self.data, self.pair_info, self.spread)
+        metrics.run_metrics()
+    
+    def display_results(self):
+        pass
+
     def run(self):
         self.logger.debug("Running program...")
         self.perform_preliminary_analysis()
         self.fetch_data()
         self.perform_pair_analysis()
         self.calculate_metrics()
+        self.display_results()

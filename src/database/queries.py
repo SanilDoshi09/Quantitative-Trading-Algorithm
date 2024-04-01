@@ -2,7 +2,7 @@
 # Insert query for stocks table
 insert_stock = """
     INSERT INTO stocks (ticker) 
-    VALUES (%s) RETURNING stock_id;
+    VALUES (%s) ON CONFLICT (ticker) DO NOTHING;
     """
 
 insert_histrical_data = """

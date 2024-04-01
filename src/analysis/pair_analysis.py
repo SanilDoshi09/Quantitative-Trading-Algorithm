@@ -5,6 +5,8 @@ import pandas as pd
 
 from ..logger import set_logger
 from statsmodels.tsa.stattools import adfuller
+from src.database import queries
+from src.database.db_manager import Database
 from src.program_handler.error_handler import ErrorHandler
 from src.utils.utility import print_pairs, choose_pair
 from dotenv import load_dotenv
@@ -24,6 +26,7 @@ class PairAnalysis:
         self.pvalue = pvalue # set ideal p-value
 
         self.error_handler = ErrorHandler() # initialize error handler
+        self.db = Database() # initialize database manager
 
         self.pair_info = {} # dictionary to store pairs and their coefficients / p-values
 
@@ -112,10 +115,19 @@ class PairAnalysis:
         
         print('\nSuccessfully passed the Augmented Dickey Fuller Cointegration test!')
         mapped_pairs = print_pairs(self.pair_info, self.pvalue) # map pairs to display index and print pairs
-        return choose_pair(mapped_pairs) # return the selected pair
+        chosen_pair = choose_pair(mapped_pairs) # return the selected pair
 
+        # insert stocks into database
+        for ticker in chosen_pair:
+            stock_id = self.db.execute_query(queries.insert_stock,(ticker,))
+            self.logger.info(f"Inserted {ticker} with stock ID: {stock_id} into database")
+
+        return chosen_pair
+    
     def run_analysis(self):
         self.logger.debug("Running pair analysis...")
         chosen_pair = self.cointegration_test()
+        print(chosen_pair)
+        print(f"Chosen pair: {chosen_pair[0]}, {chosen_pair[1]}")
         return chosen_pair # return the final pair_info dictionary
      

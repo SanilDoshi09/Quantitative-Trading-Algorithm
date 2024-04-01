@@ -83,9 +83,6 @@ dmypy.json
 # profiling data
 .prof
 
-# Data files
-data/
-
 # config files
 config.ini
 config.json
